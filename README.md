@@ -3,7 +3,7 @@
 
 <img width="510" height="774" alt="QQ_1774510877325" src="https://github.com/user-attachments/assets/1e17e369-ed03-4ae1-abbd-6a4e45bbaec9" />
 
-设备网络状态图实例
+设备网络状态图实例（智能标出主人最关注的上下行速率）
 
 <img width="6427" height="2072" alt="e74e5f24d24617d98688ec374f44bcd2" src="https://github.com/user-attachments/assets/bcdeaa0c-978a-4a3c-9410-bf2f3ef75466" />
 
