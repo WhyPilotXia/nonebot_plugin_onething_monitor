@@ -5,7 +5,7 @@
 
 设备网络状态图实例
 
-<img width="6427" height="1482" alt="2beba1e41a916e446483f5fac3ac43b0" src="https://github.com/user-attachments/assets/2725d7a6-32ef-4f92-8d33-4ddbad617450" />
+<img width="6427" height="2072" alt="e74e5f24d24617d98688ec374f44bcd2" src="https://github.com/user-attachments/assets/bcdeaa0c-978a-4a3c-9410-bf2f3ef75466" />
 
 连续多次掉线时@设备主人提示，但超过一定次数认为主人不再关心，不@
 
