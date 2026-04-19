@@ -19,6 +19,7 @@ from nonebot.adapters.onebot.v11 import GROUP_ADMIN, GROUP_OWNER
 from nonebot.params import CommandArg
 from nonebot.exception import ApiNotAvailable
 from PIL import Image
+import traceback
 
 # -------------------------- 插件元信息 --------------------------
 __plugin_meta__ = PluginMetadata(
@@ -647,8 +648,12 @@ async def send_final_request(sn: str) -> Optional[Dict]:
                     msg = f"未获取到FRP URL: {final_result.get('sMsg', '未知错误')}"
                     await bot.send_group_msg(group_id=TARGET_GROUP, message=msg)
 
+
             except Exception as e:
                 logger.error(f"解析基础信息失败: {e}")
+                logger.error(f"原始返回内容: {frp_text[:1000]}")  # 防止太长
+                logger.error(f"状态码: {resp1.status}")
+                logger.error(traceback.format_exc())
                 return None
 
     except Exception as e:
