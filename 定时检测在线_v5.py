@@ -14,7 +14,7 @@ from nonebot.permission import SUPERUSER
 from nonebot.plugin import PluginMetadata
 from nonebot.rule import Rule
 from nonebot import on_command, on_message
-from nonebot.adapters.onebot.v11 import Bot, MessageEvent, MessageSegment, Message, ActionFailed
+from nonebot.adapters.onebot.v11 import Bot, MessageEvent, MessageSegment, Message, ActionFailed, GroupMessageEvent
 from nonebot.adapters.onebot.v11 import GROUP_ADMIN, GROUP_OWNER
 from nonebot.params import CommandArg
 from nonebot.exception import ApiNotAvailable
@@ -29,7 +29,7 @@ __plugin_meta__ = PluginMetadata(
     2. 发送【登录 138xxxx】触发指定手机号登录
     3. 发送【登录 userid=xxx; sessionid=xxx】使用Cookie登录
     4. 发送【列表】查看所有账号设备并获取全局编号
-    5. 发送【基础/请求】触发请求，支持【请求 1】
+    5. 发送【基础】触发请求，支持【基础 1】
     6. 发送【网络】查看多拨状态，支持【网络 1】或指定SN
     相比v4多一个多账号管理功能
     """,
@@ -41,10 +41,10 @@ except Exception:
     scheduler = None
 
 # -------------------------- 全局配置 --------------------------
-TARGET_QQ = "****"  # 管理员QQ，用于接收验证码请求
-TARGET_GROUP = 114514  # 消息通知群
-BOT_ID = "114514"
-DEFAULT_PHONE = "****"  # 默认手机号
+TARGET_QQ = "2743218818"  # 管理员QQ，用于接收验证码请求
+TARGET_GROUP = 1072293499  # 消息通知群
+BOT_ID = "2697758341"
+DEFAULT_PHONE = "17318968901"  # 默认手机号
 
 DATA_DIR = os.path.join(os.getcwd(), "onething")
 if not os.path.exists(DATA_DIR):
@@ -159,6 +159,23 @@ def parse_cookie_str(cookie_str: str) -> Dict[str, str]:
             k, v = part.split('=', 1)
             cookies[k.strip()] = v.strip()
     return cookies
+
+
+def reset_device_cache() -> None:
+    """重置设备相关缓存，但不清理登录态"""
+    global fail_count
+
+    # 设备映射缓存
+    device_sn_map.clear()
+    device_owner_map.clear()
+
+    # 失败统计
+    fail_count.clear()
+
+    # 清空验证码等待状态
+    verify_code_state.clear()
+
+    logger.info("设备信息缓存已重置（登录态保留）")
 
 
 # -------------------------- 1. 验证码监听逻辑 --------------------------
@@ -887,6 +904,23 @@ async def handle_login(args: Message = CommandArg()):
             "参数错误。用法：\n/登录 (默认手机)\n/登录 138xxxx (指定手机)\n/登录 userid=xxx... (Cookie)")
 
 
+
+reset_device_cmd = on_command(
+    "重置设备信息",
+    permission=SUPERUSER | GROUP_ADMIN | GROUP_OWNER,
+    priority=5,
+    block=True
+)
+
+@reset_device_cmd.handle()
+async def handle_reset_device_info():
+    reset_device_cache()
+    await reset_device_cmd.finish(
+        "已重置设备列表、设备归属、失败次数；登录态已保留。"
+    )
+
+
+
 list_cmd = on_command("列表", permission=SUPERUSER | GROUP_ADMIN | GROUP_OWNER, priority=5, block=True)
 
 
@@ -936,7 +970,10 @@ manual_network = on_command("网络", permission=SUPERUSER | GROUP_ADMIN | GROUP
 
 
 @manual_network.handle()
-async def handle_network(bot: Bot, args: Message = CommandArg()):
+async def handle_network(bot: Bot, event:MessageEvent, args: Message = CommandArg()):
+    global TARGET_GROUP
+    if isinstance(event,GroupMessageEvent):
+        TARGET_GROUP = event.group_id  # 临时切换至当前群。定时任务执行时会切换会默认
     arg_text = args.extract_plain_text().strip()
 
     # 如果还没有缓存映射，先尝试获取一次
@@ -1031,17 +1068,22 @@ async def execute_batch_network_check(bot: Bot):
     if any(count > 0 for count in fail_count.values()):
         # 筛选出失败次数 > 0 的设备
         failed_devices = {sn: cnt for sn, cnt in fail_count.items() if cnt > 0}
-        # 获取最大失败次数
-        max_fail_count = max(failed_devices.values())
+        # 筛选出关注设备
+        interested_devices = ["XRVDVHL8N5KIK7S5", "XRVDEDE7FCCCA04A"]
+        interested_failed_devices = {
+            sn: cnt
+            for sn, cnt in fail_count.items()
+            if sn in interested_devices and cnt > 0
+        }
 
-        # 你的原代码逻辑：fail_message 取值
+        max_fail_count = max(interested_failed_devices.values()) if interested_failed_devices else 0  # 只关注重要设备
         fail_message = fail_messages.get(max_fail_count, f"连续{max_fail_count}次了，鼠鼠快醒醒吧！")
 
 
 
         await bot.send_group_msg(
             group_id=TARGET_GROUP,
-            message=(MessageSegment.at(TARGET_QQ) if 10 > max_fail_count > 2 else "* ") + f"{str(failed_devices)}似乎掉线了。 {fail_message}"
+            message=(MessageSegment.at(TARGET_QQ)+"重要设备：" if 20 > max_fail_count > 2 else "* ") + f"{str(failed_devices)}似乎掉线了。 {fail_message}"
         )
 
     # 如果一张图都没生成，直接返回
@@ -1069,6 +1111,8 @@ if scheduler:
     @scheduler.scheduled_job("cron", hour="*/1", minute="*/30", id="onething_batch", misfire_grace_time=3600)
     async def task_entry():
         logger.info("网心云定时任务开始")
+        global TARGET_GROUP
+        TARGET_GROUP = 1072293499  # 消息通知群
         try:
             bot = get_bot(self_id=BOT_ID)
             await execute_batch_network_check(bot)
