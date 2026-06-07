@@ -42,10 +42,10 @@ except Exception:
     scheduler = None
 
 # -------------------------- 全局配置 --------------------------
-TARGET_QQ = "2743218818"  # 管理员QQ，用于接收验证码请求
-TARGET_GROUP = 1072293499  # 消息通知群
-BOT_ID = "2697758341"
-DEFAULT_PHONE = "17318968901"  # 默认手机号
+TARGET_QQ = "2xxx"  # 管理员QQ，用于接收验证码请求
+TARGET_GROUP = 123456  # 消息通知群
+BOT_ID = "26xxx"
+DEFAULT_PHONE = "17xxxx"  # 默认手机号
 
 DATA_DIR = os.path.join(os.getcwd(), "onething")
 if not os.path.exists(DATA_DIR):
