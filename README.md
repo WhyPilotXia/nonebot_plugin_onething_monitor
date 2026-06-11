@@ -112,3 +112,11 @@ nonebot_plugin_onething_monitor/
 
 <img width="515" height="548" alt="image" src="https://github.com/user-attachments/assets/c6e42ada-b8a2-4730-bbf7-711d8b5e0000" />
 <img width="794" height="1272" alt="83153aa2d2cc092a4cc5ff306ad9ce4b" src="https://github.com/user-attachments/assets/89c89139-49e5-4b00-b670-36bc072532d9" />
+
+设备异常告警:
+
+
+<img width="505" height="330" alt="image" src="https://github.com/user-attachments/assets/f0c19762-cd58-4e91-a7d0-90813c854864" />
+
+<img width="515" height="622" alt="image" src="https://github.com/user-attachments/assets/6c387f0c-7703-423f-aa15-fa560198f8ba" />
+
