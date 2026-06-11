@@ -99,7 +99,7 @@ nonebot_plugin_onething_monitor/
 
 <img width="508" height="737" alt="image" src="https://github.com/user-attachments/assets/07bd4c27-4d79-4f59-b926-8191e439cac7" />
 
-网页抓取 Cookie 登录：
+网页抓取 Cookie 登录：（只有微信，不能收验证码时此方法很方便。登录consolepro控制台后查看json获取请求找到类似键值即可）
 
 <img width="1906" height="901" alt="image" src="https://github.com/user-attachments/assets/95b92470-c7d9-4c99-94bb-3292c49a96f1" />
 
