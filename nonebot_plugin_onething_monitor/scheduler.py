@@ -7,7 +7,7 @@ from nonebot.log import logger
 from . import state
 from .api import fetch_all_devices, send_network_request
 from .config import plugin_config
-from .render import merge_images_vertically
+from .render import image_segment_from_path, merge_images_vertically
 from .state import device_sn_map, fail_count, fail_messages, global_sessions
 
 TARGET_QQ = plugin_config.onething_target_qq  # 管理员QQ，用于接收验证码请求
@@ -110,7 +110,7 @@ async def execute_batch_network_check(bot: Bot):
             # 发送给目标群
             await bot.send_group_msg(
                 group_id=state.TARGET_GROUP,
-                message=MessageSegment.image(final_path)
+                message=image_segment_from_path(final_path)
             )
             logger.success("批量网络状态图发送成功")
         else:

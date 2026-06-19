@@ -1,13 +1,35 @@
-import base64
 import os
-import random
-import time
-from datetime import datetime
+from pathlib import Path
 
+from nonebot.adapters.onebot.v11 import MessageSegment
 from nonebot.log import logger
 from PIL import Image
 
 from .config import DATA_DIR
+
+
+FONT_FAMILIES = [
+    "SimHei",
+    "Microsoft YaHei",
+    "WenQuanYi Zen Hei",
+    "WenQuanYi Micro Hei",
+    "Droid Sans Fallback",
+    "Noto Sans CJK SC",
+    "DejaVu Sans",
+]
+
+
+def configure_matplotlib_font():
+    import matplotlib.pyplot as plt
+
+    plt.rcParams["font.sans-serif"] = FONT_FAMILIES
+    plt.rcParams["axes.unicode_minus"] = False
+
+
+def image_segment_from_path(path: str | Path) -> MessageSegment:
+    """Read the generated image in NoneBot and send it as base64."""
+    image_path = Path(path)
+    return MessageSegment.image(image_path.read_bytes())
 
 
 # -------------------------- 绘图工具 (复用优化) --------------------------
@@ -16,12 +38,8 @@ from .config import DATA_DIR
 
 def save_network_table_to_local(multidial_list: list, sn: str) -> str:
     import matplotlib.pyplot as plt
-    import os
-    import time
 
-    # 1. 字体设置
-    plt.rcParams['font.sans-serif'] = ['SimHei', 'Microsoft YaHei']
-    plt.rcParams['axes.unicode_minus'] = False
+    configure_matplotlib_font()
 
     if not multidial_list:
         return ""
@@ -120,11 +138,8 @@ def save_network_table_to_local(multidial_list: list, sn: str) -> str:
 def save_info_to_local(data: dict) -> str:
     import matplotlib.pyplot as plt
     import json
-    import os
 
-    # 1. 字体设置 (Windows下支持中文)
-    plt.rcParams['font.sans-serif'] = ['SimHei', 'Microsoft YaHei']
-    plt.rcParams['axes.unicode_minus'] = False
+    configure_matplotlib_font()
 
     formatted_text = json.dumps(data, indent=2, ensure_ascii=False)
     lines = formatted_text.split('\n')

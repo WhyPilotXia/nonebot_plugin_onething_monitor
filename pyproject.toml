@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "nonebot-plugin-onething-monitor"
-version = "0.6.1"
+version = "0.6.2"
 description = "网心云多账号在线状态监控 NoneBot2 插件，支持多账号多设备多种登录方式"
 readme = "README.md"
 requires-python = ">=3.9"

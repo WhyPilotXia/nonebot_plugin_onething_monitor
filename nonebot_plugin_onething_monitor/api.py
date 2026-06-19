@@ -14,7 +14,7 @@ from nonebot.log import logger
 
 from . import state
 from .config import plugin_config
-from .render import save_info_to_local, save_network_table_to_local
+from .render import image_segment_from_path, save_info_to_local, save_network_table_to_local
 from .session import clear_session, parse_cookie_str, save_session_to_file
 from .state import device_owner_map, device_sn_map, global_sessions, verify_code_state
 
@@ -106,6 +106,7 @@ async def login_by_sms(phone: str) -> bool:
         login_url = "https://account.onethingcloud.com/v5/user/smslogin"
         tk = sms_res["data"].get("tk", "")
 
+        # 【修复3】login_payload 也要补全 'isp' 和 'netType'
         login_payload = {
             "appId": "22017",
             "appName": "网心云",
@@ -115,8 +116,8 @@ async def login_by_sms(phone: str) -> bool:
             "deviceSign": "8caf1b5a1036ab38beb058bdf0ff8dc3",
             "deviceName": "Edge",
             "OSVer": "Windows10",
-            "isp": "NONE",
-            "netType": "OTHER",
+            "isp": "NONE",  # v5 原代码缺失
+            "netType": "OTHER",  # v5 原代码缺失
             "timestamp": int(time.time() * 1000),
             "tk": tk,
             "phone": phone,
@@ -360,7 +361,10 @@ async def send_network_request(sn: str, only_return_path: bool = False) -> Optio
                         if only_return_path:
                             return img_path
                         else:
-                            await bot.send_group_msg(group_id=state.TARGET_GROUP, message=MessageSegment.image(img_path))
+                            await bot.send_group_msg(
+                                group_id=state.TARGET_GROUP,
+                                message=image_segment_from_path(img_path),
+                            )
                             return img_path
                 else:
                     if not only_return_path:
@@ -436,7 +440,10 @@ async def send_final_request(sn: str) -> Optional[Dict]:
                         frp_result = json.loads(frp_text)
 
                         img_path = save_info_to_local(frp_result)
-                        await bot.send_group_msg(group_id=state.TARGET_GROUP, message=MessageSegment.image(img_path))
+                        await bot.send_group_msg(
+                            group_id=state.TARGET_GROUP,
+                            message=image_segment_from_path(img_path),
+                        )
                         return frp_result
                 else:
                     msg = f"未获取到FRP URL: {final_result.get('sMsg', '未知错误')}"

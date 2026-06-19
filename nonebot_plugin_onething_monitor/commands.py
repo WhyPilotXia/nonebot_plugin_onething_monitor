@@ -8,7 +8,7 @@ from nonebot.rule import Rule
 from . import state
 from .api import fetch_all_devices, login_by_cookie, login_by_sms, send_final_request, send_network_request
 from .config import plugin_config
-from .render import save_info_to_local
+from .render import image_segment_from_path, save_info_to_local
 from .scheduler import execute_batch_network_check
 from .state import device_sn_map, global_sessions, reset_device_cache, verify_code_state
 
@@ -138,7 +138,7 @@ async def handle_list():
     }
 
     img = save_info_to_local(display_data)
-    await list_cmd.finish(MessageSegment.image(img))
+    await list_cmd.finish(image_segment_from_path(img))
 
 
 manual_request = on_command("基础", permission=SUPERUSER | GROUP_ADMIN | GROUP_OWNER, priority=5, block=True)
