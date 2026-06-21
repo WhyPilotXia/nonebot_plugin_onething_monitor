@@ -43,7 +43,7 @@ ONETHING_DEFAULT_PHONE="13800000000"
 | `ONETHING_BOT_ID` | 是 | 发送通知消息的 Bot QQ |
 | `ONETHING_DEFAULT_PHONE` | 是 | 不带参数执行“登录”时使用的默认手机号 |
 
-插件运行数据默认保存在 NoneBot 运行目录下的 `onething/` 文件夹中，包括登录 session 和生成的状态图片（循环覆盖）。
+插件运行数据通过 `nonebot-plugin-localstore` 管理，包括登录 session 和生成的状态图片（循环覆盖）。可使用 `nb localstore` 查看实际存储路径，也可通过 localstore 的配置项自定义路径。
 
 ## 命令
 

@@ -1,8 +1,12 @@
-import os
 from pathlib import Path
 
-from nonebot import get_plugin_config
-from pydantic import BaseModel, field_validator
+from nonebot import get_plugin_config, require
+from nonebot.compat import field_validator
+from pydantic import BaseModel
+
+require("nonebot_plugin_localstore")
+
+import nonebot_plugin_localstore as localstore  # noqa: E402
 
 
 class Config(BaseModel):
@@ -19,5 +23,4 @@ class Config(BaseModel):
 
 plugin_config = get_plugin_config(Config)
 
-DATA_DIR = Path(os.getcwd()) / "onething"
-DATA_DIR.mkdir(parents=True, exist_ok=True)
+DATA_DIR: Path = localstore.get_plugin_data_dir()
